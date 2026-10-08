@@ -81,7 +81,7 @@ def predict():
             # Get the top prediction
             predicted_class_index = np.argmax(predictions[0])
             confidence = np.max(predictions[0]) * 100
-            predicted_class_name = CLASS_NAMES[predicted_class_index
+            predicted_class_name = CLASS_NAMES[predicted_class_index]
             result_text = f"Prediction: {predicted_class_name} ({confidence:.2f}% confidence)"
             
             # Render the page again with the result
@@ -94,4 +94,4 @@ def predict():
 
 # --- Main ---
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)), debug=False)
