@@ -1,25 +1,92 @@
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Enchanted Wings - Butterfly Classifier</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #e0c3fc, #8ec5fc);
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            width: 90%;
+            max-width: 650px;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            color: #542788;
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            color: #6a3d9a;
+            margin-bottom: 20px;
+        }
+
+        p {
+            color: #555;
+            font-size: 17px;
+        }
+
+        input[type="file"] {
+            margin: 20px 0;
+            max-width: 100%;
+        }
+
+        button {
+            background: #6a3d9a;
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #45206d;
+        }
+
+        .result {
+            margin-top: 25px;
+            color: #276749;
+            font-size: 20px;
+            font-weight: bold;
+        }
+    </style>
 </head>
+
 <body>
-    <h1>Enchanted Wings</h1>
-    <h2>Marvels of Butterfly Species</h2>
+    <div class="container">
+        <h1>🦋 Enchanted Wings</h1>
+        <h2>Marvels of Butterfly Species</h2>
 
-    <p>Upload a butterfly image to predict its species.</p>
+        <p>Upload a butterfly image to predict its species.</p>
 
-    <form action="/predict" method="POST" enctype="multipart/form-data">
-        <input type="file" name="image" accept="image/*" required>
-        <button type="submit">Predict Butterfly Species</button>
-    </form>
+        <form action="/predict" method="POST" enctype="multipart/form-data">
+            <input type="file" name="image" accept="image/*" required>
+            <br><br>
+            <button type="submit">Predict Butterfly Species</button>
+        </form>
 
-    {% if prediction_text %}
-        <h2>{{ prediction_text }}</h2>
-    {% endif %}
+        {% if prediction_text %}
+            <div class="result">{{ prediction_text }}</div>
+        {% endif %}
+    </div>
 </body>
 </html>
