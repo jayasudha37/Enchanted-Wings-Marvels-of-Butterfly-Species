@@ -1,97 +1,181 @@
-import os
-import tensorflow as tf
-from flask import Flask, request, render_template, redirect, url_for
-from PIL import Image
-import numpy as np
 
-# --- Initialization ---
+import os
+
+# Set these before importing TensorFlow
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
+os.environ["OMP_NUM_THREADS"] = "1"
+os.environ["TF_NUM_INTRAOP_THREADS"] = "1"
+os.environ["TF_NUM_INTEROP_THREADS"] = "1"
+
+import logging
+import numpy as np
+import tensorflow as tf
+
+from flask import Flask, request, render_template
+from PIL import Image, UnidentifiedImageError
+
 app = Flask(__name__)
 
-# --- Configuration ---
-# Suppress TensorFlow logging
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+# Limit uploaded image size to 8 MB
+app.config["MAX_CONTENT_LENGTH"] = 8 * 1024 * 1024
 
-# --- Load the Model (Do this once at startup) ---
-print("Loading Keras model...")
+# Reduce CPU thread usage
+tf.config.threading.set_intra_op_parallelism_threads(1)
+tf.config.threading.set_inter_op_parallelism_threads(1)
+
+logging.basicConfig(level=logging.INFO)
+
+# Butterfly classes: preserve the model's original class order
+CLASS_NAMES = [
+    'ADONIS', 'AFRICAN GIANT SWALLOWTAIL', 'AMERICAN SNOOT',
+    'AN 88', 'APPOLLO', 'ATALA', 'BANDED ORANGE HELICONIAN',
+    'BANDED PEACOCK', 'BECKERS WHITE', 'BLACK HAIRSTREAK',
+    'BLUE MORPHO', 'BLUE SPOTTED CROW', 'BROWN SIPROETA',
+    'CABBAGE WHITE', 'CAIRNS BIRDWING', 'CHECQUERED SKIPPER',
+    'CHESTNUT', 'CLEOPATRA', 'CLODIUS PARNASSIAN',
+    'CLOUDED SULPHUR', 'COMMON BANDED AWL',
+    'COMMON WOOD-NYMPH', 'COPPER TAIL', 'CRECENT',
+    'CRIMSON PATCH', 'DANAID EGGFLY', 'EASTERN COMA',
+    'EASTERN DAPPLE WHITE', 'EASTERN PINE ELFIN',
+    'ELBOWED PIERROT', 'GOLD BANDED', 'GREAT EGGFLY',
+    'GREAT JAY', 'GREEN CELLED CATTLEHEART',
+    'GREY HAIRSTREAK', 'INDRA SWALLOW', 'IPHICLUS SISTER',
+    'JULIA', 'LARGE MARBLE', 'MALACHITE',
+    'MANGROVE SKIPPER', 'MESTRA', 'METALMARK',
+    'MILBERTS TORTOISESHELL', 'MONARCH', 'MOURNING CLOAK',
+    'ORANGE OAKLEAF', 'ORANGE TIP', 'ORCHARD SWALLOW',
+    'PAINTED LADY', 'PAPER KITE', 'PEACOCK', 'PINE WHITE',
+    'PIPEVINE SWALLOW', 'POPINJAY', 'PURPLE HAIRSTREAK',
+    'PURPLISH COPPER', 'QUESTION MARK', 'RED ADMIRAL',
+    'RED CRACKER', 'RED POSTMAN', 'RED SPOTTED PURPLE',
+    'SCARCE SWALLOW', 'SILVER SPOT SKIPPER',
+    'SLEEPY ORANGE', 'SOOTYWING', 'SOUTHERN DOGFACE',
+    'STRAITED QUEEN', 'TROPICAL LEAFWING',
+    'TWO BARRED FLASHER', 'ULYSES', 'VICEROY',
+    'WOOD SATYR', 'YELLOW SWALLOW TAIL', 'ZEBRA LONG WING'
+]
+
+# Load the model once when the application starts
+print("Loading Keras model...", flush=True)
+
 try:
-    model = tf.keras.models.load_model('my_model.h5')
-    print("Model loaded successfully!")
-except Exception as e:
-    print(f"Error loading model: {e}")
+    model = tf.keras.models.load_model(
+        "my_model.h5",
+        compile=False
+    )
+
+    print("Model loaded successfully!", flush=True)
+
+    # Check model input dimensions
+    print("Model input shape:", model.input_shape, flush=True)
+    print("Model output shape:", model.output_shape, flush=True)
+
+except Exception:
+    app.logger.exception("Could not load the butterfly model")
     model = None
 
-# --- Define Your Classes ---
-# IMPORTANT: These MUST be in the same order as your model's training output
-CLASS_NAMES = ['ADONIS', 'AFRICAN GIANT SWALLOWTAIL', 'AMERICAN SNOOT', 'AN 88', 'APPOLLO', 'ATALA', 'BANDED ORANGE HELICONIAN', 'BANDED PEACOCK', 'BECKERS WHITE', 'BLACK HAIRSTREAK', 'BLUE MORPHO', 'BLUE SPOTTED CROW', 'BROWN SIPROETA', 'CABBAGE WHITE', 'CAIRNS BIRDWING', 'CHECQUERED SKIPPER', 'CHESTNUT', 'CLEOPATRA', 'CLODIUS PARNASSIAN', 'CLOUDED SULPHUR', 'COMMON BANDED AWL', 'COMMON WOOD-NYMPH', 'COPPER TAIL', 'CRECENT', 'CRIMSON PATCH', 'DANAID EGGFLY', 'EASTERN COMA', 'EASTERN DAPPLE WHITE', 'EASTERN PINE ELFIN', 'ELBOWED PIERROT', 'GOLD BANDED', 'GREAT EGGFLY', 'GREAT JAY', 'GREEN CELLED CATTLEHEART', 'GREY HAIRSTREAK', 'INDRA SWALLOW', 'IPHICLUS SISTER', 'JULIA', 'LARGE MARBLE', 'MALACHITE', 'MANGROVE SKIPPER', 'MESTRA', 'METALMARK', 'MILBERTS TORTOISESHELL', 'MONARCH', 'MOURNING CLOAK', 'ORANGE OAKLEAF', 'ORANGE TIP', 'ORCHARD SWALLOW', 'PAINTED LADY', 'PAPER KITE', 'PEACOCK', 'PINE WHITE', 'PIPEVINE SWALLOW', 'POPINJAY', 'PURPLE HAIRSTREAK', 'PURPLISH COPPER', 'QUESTION MARK', 'RED ADMIRAL', 'RED CRACKER', 'RED POSTMAN', 'RED SPOTTED PURPLE', 'SCARCE SWALLOW', 'SILVER SPOT SKIPPER', 'SLEEPY ORANGE', 'SOOTYWING', 'SOUTHERN DOGFACE', 'STRAITED QUEEN', 'TROPICAL LEAFWING', 'TWO BARRED FLASHER', 'ULYSES', 'VICEROY', 'WOOD SATYR', 'YELLOW SWALLOW TAIL', 'ZEBRA LONG WING']
 
-# --- Image Preprocessing Function ---
-def preprocess_image(img):
-    """
-    Takes an image, resizes it to 224x224, and prepares it for the model.
-    """
-    # Resize the image to the size your model expects
-    img = img.resize((224, 224))
-    
-    # Convert the image to a numpy array
-    img_array = np.array(img)
-    
-    # If the image has an alpha channel (4 channels), remove it
-    if img_array.shape[2] == 4:
-        img_array = img_array[:, :, :3]
-        
-    # Add a "batch" dimension
-    img_array = np.expand_dims(img_array, axis=0)
-    
-    # Normalize the image data (if your model was trained on normalized data)
-    img_array = img_array / 255.0
-    
-    return img_array
+def preprocess_image(file):
+    """Convert an uploaded image to a model-ready RGB array."""
 
-# --- Routes ---
-@app.route('/', methods=['GET'])
+    with Image.open(file.stream) as img:
+        img = img.convert("RGB")
+        img = img.resize((224, 224))
+
+        image_array = np.asarray(img, dtype=np.float32)
+
+    # Keep this normalization consistent with model training.
+    image_array = image_array / 255.0
+
+    # Shape becomes (1, 224, 224, 3)
+    image_array = np.expand_dims(image_array, axis=0)
+
+    return image_array
+
+
+@app.route("/", methods=["GET"])
 def index():
-    """Render the main page."""
-    return render_template('index.html')
+    return render_template("index.html")
 
-@app.route('/predict', methods=['POST'])
+
+@app.route("/predict", methods=["POST"])
 def predict():
-    """Handle the image upload and prediction."""
+
     if model is None:
-        return render_template('index.html', prediction_text="Error: Model is not loaded.")
+        return render_template(
+            "index.html",
+            error="The prediction model could not be loaded."
+        ), 500
 
-    if 'image' not in request.files:
-        return redirect(request.url)
+    if "image" not in request.files:
+        return render_template(
+            "index.html",
+            error="Please select a butterfly image."
+        ), 400
 
-    file = request.files['image']
+    file = request.files["image"]
 
-    if file.filename == '':
-        return redirect(request.url)
+    if not file.filename:
+        return render_template(
+            "index.html",
+            error="Please select an image first."
+        ), 400
 
-    if file:
-        try:
-            # Open the image file
-            img = Image.open(file.stream)
-            
-            # Preprocess the image
-            processed_img = preprocess_image(img)
-            
-            # Make prediction
-            predictions = model.predict(processed_img)
-            
-            # Get the top prediction
-            predicted_class_index = np.argmax(predictions[0])
-            confidence = np.max(predictions[0]) * 100
-            predicted_class_name = CLASS_NAMES[predicted_class_index]
-            result_text = f"Prediction: {predicted_class_name} ({confidence:.2f}% confidence)"
-            
-            # Render the page again with the result
-            return render_template('index.html', prediction_text=result_text)
+    try:
+        # Prepare uploaded image
+        image_array = preprocess_image(file)
 
-        except Exception as e:
-            return render_template('index.html', prediction_text=f"An error occurred: {e}")
+        # Run inference without the Keras predict() data adapter
+        output = model(image_array, training=False)
+        predictions = np.asarray(output)[0]
 
-    return redirect(url_for('index'))
+        # Validate prediction output
+        if predictions.ndim != 1:
+            raise ValueError("Unexpected model output dimensions.")
 
-# --- Main ---
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)), debug=False)
+        if len(predictions) != len(CLASS_NAMES):
+            raise ValueError(
+                f"Model returned {len(predictions)} classes, "
+                f"but CLASS_NAMES contains {len(CLASS_NAMES)}."
+            )
+
+        predicted_index = int(np.argmax(predictions))
+        predicted_species = CLASS_NAMES[predicted_index]
+
+        app.logger.info("Prediction completed: %s", predicted_species)
+
+        # Display only the species name
+        return render_template(
+            "index.html",
+            prediction_text=predicted_species
+        )
+
+    except (UnidentifiedImageError, OSError):
+        return render_template(
+            "index.html",
+            error="Please upload a valid image file."
+        ), 400
+
+    except Exception:
+        app.logger.exception("Butterfly prediction failed")
+
+        return render_template(
+            "index.html",
+            error="Prediction failed. Please try another image."
+        ), 500
+
+
+@app.errorhandler(413)
+def file_too_large(error):
+    return render_template(
+        "index.html",
+        error="Image is too large. Please upload an image under 8 MB."
+    ), 413
+
+
+if __name__ == "__main__":
+    app.run(
+        host="0.0.0.0",
+        port=int(os.environ.get("PORT", 5000)),
+        debug=False
+    )
