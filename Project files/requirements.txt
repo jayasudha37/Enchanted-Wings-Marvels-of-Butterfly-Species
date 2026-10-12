@@ -1,9 +1,6 @@
+
 Flask
-<<<<<<< HEAD
-tensorflow
-=======
 tensorflow==2.20.0
->>>>>>> 84c0c41e0750cc8a86c138127abd2b24b43724f6
 Pillow
 numpy
 gunicorn
