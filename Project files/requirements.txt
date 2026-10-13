@@ -1,6 +1,5 @@
 
 Flask
-tensorflow==2.20.0
-Pillow
+tensorflow
 numpy
-gunicorn
+Pillow
