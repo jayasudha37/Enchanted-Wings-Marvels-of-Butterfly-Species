@@ -5,362 +5,318 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Enchanted Wings - Marvels of Butterfly Species Prediction</title>
+    <title>Enchanted Wings - Butterfly Species Prediction</title>
 
     <style>
         * {
+            margin: 0;
+            padding: 0;
             box-sizing: border-box;
         }
 
         body {
-            margin: 0;
             font-family: "Segoe UI", Arial, sans-serif;
-            background: #ffffff;
-            color: #152e68;
+            background: #f5f6fb;
+            color: #202b49;
+            min-height: 100vh;
         }
 
-        /* Main project heading */
-        .header {
-            max-width: 1510px;
-            margin: auto;
-            padding: 27px 30px 31px;
+        .container {
+            max-width: 1450px;
+            width: 92%;
+            margin: 30px auto;
+        }
+
+        /* PROJECT HEADER */
+
+        .hero {
+            width: 100%;
+            min-height: 175px;
+            background: linear-gradient(120deg, #202b58, #414b83);
+            border-radius: 18px;
+            padding: 25px 20px;
             display: flex;
             align-items: center;
-            gap: 25px;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            margin-bottom: 28px;
+            box-shadow: 0 10px 28px rgba(36, 45, 91, 0.13);
         }
 
-        .logo {
-            font-size: 53px;
-            line-height: 1;
+        .hero-content {
+            width: 100%;
         }
 
-        .header h1 {
-            margin: 0;
-            color: #1d318e;
-            font-size: clamp(30px, 3vw, 48px);
+        .hero-icon {
+            font-size: 35px;
+            margin-bottom: 5px;
+        }
+
+        /* COMPLETE TITLE IN ONE LINE */
+
+        .hero h1 {
+            font-size: clamp(23px, 3vw, 38px);
             font-weight: 800;
-            letter-spacing: -1px;
+            letter-spacing: 0.3px;
+            line-height: 1.3;
+            white-space: nowrap;
         }
 
-        .header p {
-            margin: 5px 0 0;
-            font-size: clamp(18px, 2vw, 29px);
-            color: #10265d;
+        .hero p {
+            font-size: 14px;
+            color: #d6daf1;
+            margin-top: 12px;
         }
 
-        .header p span {
-            color: #08a477;
-            font-weight: 750;
-        }
+        /* MAIN TWO-CARD LAYOUT */
 
-        /* Three-column dashboard */
-        .dashboard {
-            max-width: 1510px;
-            margin: 0 auto;
-            padding: 0 25px;
+        .main-grid {
             display: grid;
-            grid-template-columns: 1fr 1.1fr 1fr;
-            gap: 20px;
+            grid-template-columns: 0.9fr 1.5fr;
+            gap: 24px;
             align-items: stretch;
         }
 
         .card {
-            min-width: 0;
-            min-height: 530px;
-            padding: 23px;
             background: #ffffff;
-            border: 1px solid #d9e4ff;
-            border-radius: 18px;
-            box-shadow: 0 9px 30px rgba(30, 55, 110, 0.06);
+            border: 1px solid #e2e5f0;
+            border-radius: 17px;
+            padding: 28px;
+            box-shadow: 0 8px 25px rgba(37, 47, 83, 0.055);
+            min-width: 0;
         }
 
-        .card h2 {
-            margin: 7px 0 24px;
-            color: #10295f;
+        .card h3 {
+            color: #25335e;
             font-size: 22px;
-            font-weight: 750;
+            margin-bottom: 10px;
         }
 
-        /* Upload column */
-        .upload-card {
-            background: #fbfcff;
-        }
-
-        .upload-heading {
-            text-align: center;
-            margin-top: 29px;
-        }
-
-        .cloud-icon {
-            font-size: 37px;
-            margin-bottom: 14px;
-        }
-
-        .upload-heading h3 {
-            margin: 0 0 14px;
-            font-size: 23px;
-            color: #142c64;
-        }
-
-        .upload-heading p {
-            margin: 0 0 25px;
-            color: #687c9f;
-            font-size: 15px;
+        .description {
+            color: #78829b;
+            font-size: 14px;
             line-height: 1.6;
+            margin-bottom: 24px;
         }
 
-        .drop-area {
-            margin-top: 24px;
-            padding: 24px 15px;
-            min-height: 160px;
-            border: 2px dashed #b9caff;
-            border-radius: 14px;
+        /* UPLOAD SECTION */
+
+        .upload-card {
             display: flex;
             flex-direction: column;
-            align-items: center;
             justify-content: center;
-            gap: 15px;
-            background: #ffffff;
         }
 
-        .file-icon {
-            font-size: 27px;
-            color: #16316e;
+        .upload-icon {
+            font-size: 47px;
+            text-align: center;
+            margin-bottom: 18px;
         }
 
-        .drop-area input {
-            width: 100%;
-            max-width: 100%;
-            color: #687b99;
-            font-size: 13px;
-        }
-
-        .file-hint {
-            color: #7c8fb4;
-            font-size: 12px;
+        .upload-card h3,
+        .upload-card .description {
             text-align: center;
         }
 
-        .preview {
-            display: none;
-            max-width: 100%;
-            max-height: 190px;
-            object-fit: contain;
-            border-radius: 9px;
+        .upload-box {
+            border: 2px dashed #b9c2e4;
+            background: #f9f9fe;
+            border-radius: 13px;
+            padding: 28px 16px;
+            margin-bottom: 20px;
         }
 
-        .predict-button {
+        .upload-box input {
             width: 100%;
-            margin-top: 22px;
-            padding: 16px 12px;
-            border: none;
-            border-radius: 28px;
-            background: #0ba77c;
-            color: #ffffff;
-            font-size: 16px;
-            font-weight: 750;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .predict-button:hover {
-            background: #078961;
-        }
-
-        .predict-button:disabled {
-            opacity: 0.7;
-            cursor: wait;
-        }
-
-        .error-message {
-            padding: 12px;
-            margin-top: 16px;
-            border-radius: 9px;
-            background: #fff0ef;
-            color: #a62e2e;
             font-size: 13px;
-            line-height: 1.5;
+            color: #53607c;
+            cursor: pointer;
         }
 
-        /* Analysis column */
-        .butterfly-frame {
-            height: 330px;
+        .upload-hint {
+            font-size: 12px;
+            color: #929bb1;
+            margin-top: 14px;
+            text-align: center;
+        }
+
+        .predict-btn {
             width: 100%;
-            padding: 8px;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background: #394779;
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.25s;
+        }
+
+        .predict-btn:hover {
+            background: #28365f;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(40, 54, 95, 0.18);
+        }
+
+        /* ANALYSIS SECTION */
+
+        .result-card {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .result-heading {
             display: flex;
             align-items: center;
-            justify-content: center;
-            border-radius: 14px;
-            background: #f7faf8;
+            gap: 11px;
+            margin-bottom: 20px;
         }
 
-        .butterfly-frame img {
-            display: block;
-            height: 100%;
+        .result-heading span {
+            font-size: 27px;
+        }
+
+        .butterfly-image {
             width: 100%;
+            height: 350px;
             object-fit: contain;
-            border-radius: 10px;
+            background: #f7f7fb;
+            border: 1px solid #ececf4;
+            border-radius: 13px;
+            margin-bottom: 20px;
         }
 
-        .empty-analysis {
-            padding: 20px;
+        .empty-result {
+            height: 350px;
+            background: #f8f8fc;
+            border: 2px dashed #d5d9e9;
+            border-radius: 13px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             text-align: center;
-            color: #8090a7;
-            font-size: 15px;
+            padding: 25px;
+            color: #77819a;
+            margin-bottom: 20px;
+        }
+
+        .empty-result span {
+            font-size: 65px;
+            margin-bottom: 18px;
+        }
+
+        .empty-result h3 {
+            font-size: 21px;
+            margin-bottom: 10px;
+        }
+
+        .empty-result p {
+            font-size: 14px;
             line-height: 1.7;
         }
 
+        /* PREDICTION BOX */
+
         .prediction-box {
-            margin-top: 20px;
-            padding: 19px;
-            background: #effbf4;
-            border: 1px solid #c8efd8;
-            border-radius: 14px;
+            background: #f0f2fc;
+            border: 1px solid #dfe3f7;
+            border-radius: 13px;
+            padding: 23px;
         }
 
         .prediction-label {
-            color: #07834d;
+            color: #53618e;
             font-size: 12px;
             font-weight: 800;
-            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 10px;
         }
 
         .species-name {
-            margin-top: 10px;
-            color: #075b32;
-            font-size: 25px;
+            color: #28365f;
+            font-size: 28px;
             font-weight: 800;
-            overflow-wrap: anywhere;
+            margin-bottom: 13px;
+            text-transform: capitalize;
         }
 
         .confidence {
-            margin-top: 14px;
-            color: #14653f;
+            color: #596581;
             font-size: 16px;
         }
 
         .confidence strong {
-            font-weight: 800;
+            color: #394779;
         }
 
-        /* Species details column */
-        .about-title {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
+        /* ERROR MESSAGE */
 
-        .leaf-icon {
-            font-size: 26px;
-        }
-
-        .about-title h2 {
-            margin: 7px 0 23px;
-        }
-
-        .detail-row {
-            display: grid;
-            grid-template-columns: minmax(100px, 0.8fr) minmax(0, 1.2fr);
-            gap: 12px;
-            padding: 15px 0;
-            border-top: 1px solid #e7edf6;
-            align-items: start;
-        }
-
-        .detail-label {
-            color: #657da7;
-            font-size: 13px;
-            font-weight: 700;
-        }
-
-        .detail-value {
-            color: #183363;
-            font-size: 13px;
-            line-height: 1.65;
-            overflow-wrap: anywhere;
-        }
-
-        .detail-value ul {
-            padding-left: 17px;
-            margin: 0;
-        }
-
-        .detail-value li {
-            margin-bottom: 9px;
-        }
-
-        .description {
-            margin-top: 17px;
+        .error-message {
             padding: 13px;
-            border-radius: 12px;
-            background: #f1f6ff;
-            color: #60789e;
-            font-size: 13px;
-            line-height: 1.6;
+            margin-bottom: 18px;
+            border-radius: 9px;
+            background: #fff0f0;
+            border: 1px solid #f5d0d0;
+            color: #a42e36;
+            font-size: 14px;
         }
 
-        /* Footer */
-        .footer {
-            padding: 30px 20px;
+        footer {
             text-align: center;
-            color: #1d318e;
-            font-size: 24px;
+            color: #9299ad;
+            font-size: 13px;
+            margin: 28px 0 18px;
         }
 
-        /* Tablet */
-        @media (max-width: 1050px) {
-            .dashboard {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
+        /* TABLET */
+
+        @media (max-width: 850px) {
+            .main-grid {
+                grid-template-columns: 1fr;
             }
 
-            .about-card {
-                grid-column: 1 / -1;
-                min-height: auto;
+            .hero h1 {
+                font-size: clamp(22px, 4vw, 32px);
+            }
+
+            .butterfly-image,
+            .empty-result {
+                height: 300px;
             }
         }
 
-        /* Mobile */
-        @media (max-width: 650px) {
-            .header {
-                padding: 24px 18px;
-                gap: 14px;
+        /* MOBILE */
+
+        @media (max-width: 600px) {
+            .container {
+                width: 94%;
+                margin: 18px auto;
             }
 
-            .logo {
-                font-size: 40px;
+            .hero {
+                padding: 23px 12px;
+                min-height: 150px;
             }
 
-            .header h1 {
-                font-size: 28px;
-                letter-spacing: -0.5px;
+            .hero h1 {
+                white-space: normal;
+                font-size: 27px;
             }
 
-            .header p {
-                font-size: 16px;
-                line-height: 1.6;
-            }
-
-            .dashboard {
-                grid-template-columns: minmax(0, 1fr);
-                padding: 0 14px;
-                gap: 16px;
+            .hero p {
+                font-size: 12px;
             }
 
             .card {
-                min-height: auto;
                 padding: 20px;
             }
 
-            .about-card {
-                grid-column: auto;
-            }
-
-            .butterfly-frame {
-                height: 280px;
-            }
-
-            .footer {
-                padding: 23px;
+            .butterfly-image,
+            .empty-result {
+                height: 240px;
             }
         }
     </style>
@@ -368,297 +324,153 @@
 
 <body>
 
-    <!-- PROJECT HEADER -->
-    <header class="header">
-        <div class="logo">🦋</div>
+<div class="container">
 
-        <div>
-            <h1>Enchanted Wings</h1>
+    <!-- PROJECT TITLE -->
+
+    <header class="hero">
+        <div class="hero-content">
+
+            <div class="hero-icon">🦋</div>
+
+            <h1>
+                Enchanted Wings: Marvels of Butterfly Species Prediction
+            </h1>
+
             <p>
-                Marvels of
-                <span>Butterfly Species Prediction</span>
+                Discover the beauty of butterflies through AI-powered image classification.
             </p>
+
         </div>
     </header>
 
-    <main class="dashboard">
 
-        <!-- LEFT CARD: UPLOAD -->
+    <main class="main-grid">
+
+        <!-- UPLOAD CARD -->
+
         <section class="card upload-card">
 
-            <h2>Upload Butterfly Image</h2>
+            <div class="upload-icon">📤</div>
+
+            <h3>Upload Butterfly Image</h3>
+
+            <p class="description">
+                Choose a butterfly image to discover its species.
+            </p>
+
+            {% if error %}
+                <div class="error-message">
+                    {{ error }}
+                </div>
+            {% endif %}
 
             <form
-                id="uploadForm"
                 action="{{ url_for('predict') }}"
                 method="POST"
                 enctype="multipart/form-data"
             >
 
-                <div class="upload-heading">
-                    <div class="cloud-icon">☁️</div>
-
-                    <h3>Upload Butterfly Image</h3>
-
-                    <p>
-                        Choose a butterfly image to discover its species.
-                    </p>
-                </div>
-
-                <div class="drop-area">
-
-                    <div class="file-icon">▧</div>
+                <div class="upload-box">
 
                     <input
                         type="file"
-                        name="image"
-                        id="image"
+                        name="butterfly_image"
                         accept=".jpg,.jpeg,.png,.webp"
                         required
                     >
 
-                    <div class="file-hint">
+                    <p class="upload-hint">
                         JPG, PNG or WEBP · Maximum 10 MB
-                    </div>
-
-                    <img
-                        id="preview"
-                        class="preview"
-                        alt="Selected butterfly preview"
-                    >
+                    </p>
 
                 </div>
 
-                <button
-                    type="submit"
-                    id="predictButton"
-                    class="predict-button"
-                >
+                <button type="submit" class="predict-btn">
                     🔍 &nbsp; Predict Species
                 </button>
 
             </form>
 
-            {% if error_message %}
-                <div class="error-message" role="alert">
-                    {{ error_message }}
-                </div>
-            {% endif %}
-
         </section>
 
-        <!-- MIDDLE CARD: ANALYSIS -->
-        <section class="card analysis-card">
 
-            <h2>Butterfly Analysis</h2>
+        <!-- BUTTERFLY ANALYSIS CARD -->
 
-            <div class="butterfly-frame">
+        <section class="card result-card">
 
-                {% if image_url %}
+            <div class="result-heading">
+                <span>🦋</span>
+                <h3>Butterfly Analysis</h3>
+            </div>
 
-                    <img
-                        src="{{ url_for('static', filename=image_url) }}"
-                        alt="Uploaded butterfly"
-                    >
+            {% if result %}
 
-                {% else %}
+                <img
+                    src="{{ result.image_url }}"
+                    alt="Uploaded butterfly image"
+                    class="butterfly-image"
+                >
 
-                    <div class="empty-analysis">
-                        🦋<br>
-                        Upload a butterfly image to see the analysis here.
+                <div class="prediction-box">
+
+                    <div class="prediction-label">
+                        PREDICTED SPECIES
                     </div>
 
-                {% endif %}
+                    <div class="species-name">
+                        {{ result.species }}
+                    </div>
 
-            </div>
-
-            <div class="prediction-box">
-
-                <div class="prediction-label">
-                    Predicted Species
-                </div>
-
-                <div class="species-name">
-                    {{ species if species else "Awaiting Prediction" }}
-                </div>
-
-                <div class="confidence">
-
-                    {% if confidence is not none %}
-
+                    <p class="confidence">
                         Confidence:
-                        <strong>{{ "%.2f"|format(confidence) }}%</strong>
-
-                    {% else %}
-
-                        Upload an image to begin identification.
-
-                    {% endif %}
+                        <strong>
+                            {{ "%.2f"|format(result.confidence|float) }}%
+                        </strong>
+                    </p>
 
                 </div>
 
-            </div>
+            {% else %}
 
-        </section>
+                <div class="empty-result">
 
-        <!-- RIGHT CARD: SPECIES INFORMATION -->
-        <section class="card about-card">
+                    <span>🦋</span>
 
-            <div class="about-title">
-                <span class="leaf-icon">🌿</span>
-                <h2>About This Species</h2>
-            </div>
+                    <h3>Ready for Analysis</h3>
 
-            <div class="detail-row">
-
-                <div class="detail-label">
-                    Scientific Name
-                </div>
-
-                <div class="detail-value">
-                    {{ scientific_name or "Information unavailable" }}
-                </div>
-
-            </div>
-
-            <div class="detail-row">
-
-                <div class="detail-label">
-                    Family
-                </div>
-
-                <div class="detail-value">
-                    {{ family or "Information unavailable" }}
-                </div>
-
-            </div>
-
-            <div class="detail-row">
-
-                <div class="detail-label">
-                    Common Name
-                </div>
-
-                <div class="detail-value">
-                    {{ species or "Not identified yet" }}
-                </div>
-
-            </div>
-
-            <div class="detail-row">
-
-                <div class="detail-label">
-                    Key Features
-                </div>
-
-                <div class="detail-value">
-
-                    {% if features %}
-
-                        <ul>
-                            {% for feature in features %}
-                                <li>{{ feature }}</li>
-                            {% endfor %}
-                        </ul>
-
-                    {% else %}
-
-                        Information unavailable
-
-                    {% endif %}
+                    <p>
+                        Upload a butterfly image and click
+                        <strong>Predict Species</strong>
+                        to see your classification result here.
+                    </p>
 
                 </div>
 
-            </div>
+                <div class="prediction-box">
 
-            <div class="description">
+                    <div class="prediction-label">
+                        AI-POWERED CLASSIFICATION
+                    </div>
 
-                {% if description %}
+                    <p class="confidence">
+                        Your butterfly prediction will appear here.
+                    </p>
 
-                    {{ description }}
+                </div>
 
-                {% elif species %}
-
-                    This species was identified by the butterfly
-                    classification model. Results depend on the image
-                    and the model's training and performance.
-
-                {% else %}
-
-                    Upload a butterfly image to discover information
-                    about its species.
-
-                {% endif %}
-
-            </div>
+            {% endif %}
 
         </section>
 
     </main>
 
-    <footer class="footer">
-        🦋
+
+    <footer>
+        Enchanted Wings | Butterfly Species Classification | Deep Learning
     </footer>
 
-    <script>
-        const imageInput = document.getElementById("image");
-        const preview = document.getElementById("preview");
-        const form = document.getElementById("uploadForm");
-        const predictButton = document.getElementById("predictButton");
-
-        let previewURL = null;
-
-        imageInput.addEventListener("change", function () {
-
-            const file = this.files[0];
-
-            if (previewURL) {
-                URL.revokeObjectURL(previewURL);
-                previewURL = null;
-            }
-
-            if (!file) {
-                preview.style.display = "none";
-                return;
-            }
-
-            const validTypes = [
-                "image/jpeg",
-                "image/png",
-                "image/webp"
-            ];
-
-            if (!validTypes.includes(file.type)) {
-                alert("Please select a JPG, PNG, or WEBP image.");
-                this.value = "";
-                preview.style.display = "none";
-                return;
-            }
-
-            if (file.size > 10 * 1024 * 1024) {
-                alert("Please select an image smaller than 10 MB.");
-                this.value = "";
-                preview.style.display = "none";
-                return;
-            }
-
-            previewURL = URL.createObjectURL(file);
-            preview.src = previewURL;
-            preview.style.display = "block";
-        });
-
-        form.addEventListener("submit", function (event) {
-
-            if (!imageInput.files.length) {
-                event.preventDefault();
-                alert("Please select a butterfly image.");
-                return;
-            }
-
-            predictButton.disabled = true;
-            predictButton.textContent = "Analyzing Butterfly...";
-        });
-    </script>
+</div>
 
 </body>
 </html>
